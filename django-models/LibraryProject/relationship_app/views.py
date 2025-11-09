@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
-from .models import Book
-from .models import Library
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.views import LoginView, LogoutView
+from .models import Book, Library
 
 # Function-based view to list all books
 def list_books(request):
@@ -33,11 +33,34 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
 
-# User login view - using Django's built-in LoginView
-from django.contrib.auth.views import LoginView, LogoutView
-
-# Custom logout view (optional - can also use Django's built-in)
+# Custom logout view
 def user_logout(request):
     """Handle user logout."""
     logout(request)
     return render(request, 'relationship_app/logout.html')
+
+# Role checking functions
+def is_admin(user):
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
+
+# Role-based views
+@user_passes_test(is_admin)
+def admin_view(request):
+    """View accessible only to Admin users."""
+    return render(request, 'relationship_app/admin_view.html')
+
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    """View accessible only to Librarian users."""
+    return render(request, 'relationship_app/librarian_view.html')
+
+@user_passes_test(is_member)
+def member_view(request):
+    """View accessible only to Member users."""
+    return render(request, 'relationship_app/member_view.html')
