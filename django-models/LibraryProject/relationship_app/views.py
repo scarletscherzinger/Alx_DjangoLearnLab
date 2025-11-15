@@ -1,3 +1,5 @@
+# dummy change to trigger new commit
+
 from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
 from django.contrib.auth import login, logout
