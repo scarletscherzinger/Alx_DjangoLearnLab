@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+</head>
+<body>
+    <h1>Book List</h1>
+    
+    <!-- Search form with CSRF protection -->
+    <form method="get" action="{% url 'book_list' %}">
+        <input type="text" name="search" placeholder="Search books..." value="{{ request.GET.search }}">
+        <button type="submit">Search</button>
+    </form>
+    
+    <ul>
+        {% for book in books %}
+            <li>
+                <strong>{{ book.title }}</strong> by {{ book.author }} ({{ book.publication_year }})
+            </li>
+        {% empty %}
+            <li>No books found.</li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{% url 'book_create' %}">Add New Book</a>
+</body>
+</html>

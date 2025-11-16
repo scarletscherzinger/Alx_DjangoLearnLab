@@ -129,3 +129,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Authentication settings
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+# Security Settings
+# These settings enhance application security by adding browser-side protections
+
+# Prevent browsers from guessing content types
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser's XSS filtering
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevent site from being loaded in a frame (clickjacking protection)
+X_FRAME_OPTIONS = 'DENY'
+
+# Ensure cookies are only sent over HTTPS (set to True in production)
+CSRF_COOKIE_SECURE = False  # Set to True when using HTTPS in production
+SESSION_COOKIE_SECURE = False  # Set to True when using HTTPS in production
+
+# Additional security settings
+SECURE_SSL_REDIRECT = False  # Set to True in production to redirect all HTTP to HTTPS
