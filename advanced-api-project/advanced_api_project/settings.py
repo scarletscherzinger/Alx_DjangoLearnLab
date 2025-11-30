@@ -82,6 +82,10 @@ DATABASES = {
     }
 }
 
+# Test Database Configuration
+# Django automatically creates a separate test database (prefixed with 'test_')
+# This ensures tests don't affect production or development data
+# The test database is created before tests run and destroyed after completion
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
