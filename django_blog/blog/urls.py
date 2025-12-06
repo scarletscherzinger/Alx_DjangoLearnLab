@@ -12,7 +12,7 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
 
     # Comment URLs
-    path('post/<int:post_id>/comments/new/', views.add_comment, name='add-comment'),
+    path('post/<int:post_id>/comments/new/', views.CommentCreateView.as_view(), name='add-comment'),
     path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='edit-comment'),
     path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='delete-comment'),
     path('login/', auth_views.LoginView.as_view(template_name='blog/login.html'), name='login'),
