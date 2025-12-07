@@ -9,7 +9,7 @@
         <p><a href="{% url 'post-create' %}">Create New Post</a></p>
     {% endif %}
 
-    <!-- ADD SEARCH BAR HERE -->
+    <!-- Search Bar -->
     <div class="search-bar mb-4">
         <form method="get" action="{% url 'search-posts' %}">
             <div class="input-group">
@@ -18,7 +18,6 @@
             </div>
         </form>
     </div>
-    <!-- END OF SEARCH BAR -->
     
     {% if posts %}
         {% for post in posts %}
@@ -26,6 +25,15 @@
                 <h2><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h2>
                 <p class="post-meta">By {{ post.author.username }} on {{ post.published_date|date:"F d, Y" }}</p>
                 <p>{{ post.content|truncatewords:30 }}</p>
+                
+                {% if post.tags.all %}
+                    <div class="tags">
+                        {% for tag in post.tags.all %}
+                            <a href="{% url 'posts-by-tag' tag.slug %}" class="badge bg-secondary text-decoration-none">{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
                 <a href="{% url 'post-detail' post.pk %}">Read More</a>
             </div>
             <hr>
