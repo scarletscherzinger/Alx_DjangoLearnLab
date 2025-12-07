@@ -19,4 +19,8 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='blog/logout.html'), name='logout'),
     path('register/', views.register, name='register'),
     path('profile/', views.profile, name='profile'),
+
+    # Search and Tags URLs - ADD THESE TWO LINES
+    path('search/', views.search_posts, name='search-posts'),
+    path('tags/<str:tag_name>/', views.posts_by_tag, name='posts-by-tag'),
 ]

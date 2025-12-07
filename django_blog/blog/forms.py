@@ -1,40 +1,20 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from .models import Post, Comment
 
-
-from .models import Comment
-
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
+class PostForm(forms.ModelForm):
     class Meta:
-        model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        model = Post
+        fields = ['title', 'content', 'tags']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'tags': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter tags separated by commas'}),
+        }
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-        return user
-    
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['content']
         widgets = {
-            'content': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Write your comment here...'
-            })
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write your comment here...'}),
         }
-        labels = {
-            'content': 'Comment'
-        }
-    
-    def clean_content(self):
-        content = self.cleaned_data.get('content')
-        if not content or len(content.strip()) < 3:
-            raise forms.ValidationError('Comment must be at least 3 characters long.')
-        return content

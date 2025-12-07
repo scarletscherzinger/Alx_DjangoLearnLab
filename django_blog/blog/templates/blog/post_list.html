@@ -8,6 +8,17 @@
     {% if user.is_authenticated %}
         <p><a href="{% url 'post-create' %}">Create New Post</a></p>
     {% endif %}
+
+    <!-- ADD SEARCH BAR HERE -->
+    <div class="search-bar mb-4">
+        <form method="get" action="{% url 'search-posts' %}">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search posts by title, content, or tags..." value="{{ request.GET.q }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+    <!-- END OF SEARCH BAR -->
     
     {% if posts %}
         {% for post in posts %}
