@@ -175,6 +175,209 @@ social_media_api/
 └── README.md
 ```
 
+## Posts and Comments API
+
+### Posts Endpoints
+
+#### 1. List All Posts
+- **URL:** `/api/posts/`
+- **Method:** `GET`
+- **Authentication:** Optional (public access)
+- **Query Parameters:**
+  - `page`: Page number (default: 1)
+  - `page_size`: Results per page (default: 10, max: 100)
+  - `search`: Search posts by title or content
+- **Response (200 OK):**
+```json
+  {
+    "count": 50,
+    "next": "http://localhost:8000/api/posts/?page=2",
+    "previous": null,
+    "results": [
+      {
+        "id": 1,
+        "author": "john_doe",
+        "author_id": 1,
+        "title": "My First Post",
+        "content": "This is the content of my first post.",
+        "created_at": "2025-12-13T10:30:00Z",
+        "updated_at": "2025-12-13T10:30:00Z",
+        "comments": [],
+        "comments_count": 0
+      }
+    ]
+  }
+```
+
+#### 2. Create a Post
+- **URL:** `/api/posts/`
+- **Method:** `POST`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Request Body:**
+```json
+  {
+    "title": "My New Post",
+    "content": "This is the content of my new post."
+  }
+```
+- **Response (201 Created):**
+```json
+  {
+    "id": 2,
+    "author": "john_doe",
+    "author_id": 1,
+    "title": "My New Post",
+    "content": "This is the content of my new post.",
+    "created_at": "2025-12-13T11:00:00Z",
+    "updated_at": "2025-12-13T11:00:00Z",
+    "comments": [],
+    "comments_count": 0
+  }
+```
+
+#### 3. Retrieve a Post
+- **URL:** `/api/posts/{id}/`
+- **Method:** `GET`
+- **Authentication:** Optional
+- **Response (200 OK):** Same as create response with comments included
+
+#### 4. Update a Post
+- **URL:** `/api/posts/{id}/`
+- **Method:** `PUT` or `PATCH`
+- **Authentication:** Token required (must be author)
+- **Headers:** `Authorization: Token <your-token>`
+- **Request Body (PATCH):**
+```json
+  {
+    "title": "Updated Title"
+  }
+```
+- **Response (200 OK):** Updated post object
+
+#### 5. Delete a Post
+- **URL:** `/api/posts/{id}/`
+- **Method:** `DELETE`
+- **Authentication:** Token required (must be author)
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (204 No Content)**
+
+#### 6. Search Posts
+- **URL:** `/api/posts/?search=keyword`
+- **Method:** `GET`
+- **Authentication:** Optional
+- **Example:** `/api/posts/?search=django`
+- **Response:** Paginated list of posts matching search in title or content
+
+### Comments Endpoints
+
+#### 1. List All Comments
+- **URL:** `/api/comments/`
+- **Method:** `GET`
+- **Authentication:** Optional
+- **Query Parameters:**
+  - `page`: Page number
+  - `page_size`: Results per page
+- **Response (200 OK):**
+```json
+  {
+    "count": 25,
+    "next": "http://localhost:8000/api/comments/?page=2",
+    "previous": null,
+    "results": [
+      {
+        "id": 1,
+        "post": 1,
+        "author": "jane_smith",
+        "author_id": 2,
+        "content": "Great post!",
+        "created_at": "2025-12-13T10:45:00Z",
+        "updated_at": "2025-12-13T10:45:00Z"
+      }
+    ]
+  }
+```
+
+#### 2. Create a Comment
+- **URL:** `/api/comments/`
+- **Method:** `POST`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Request Body:**
+```json
+  {
+    "post": 1,
+    "content": "This is my comment on the post."
+  }
+```
+- **Response (201 Created):**
+```json
+  {
+    "id": 2,
+    "post": 1,
+    "author": "john_doe",
+    "author_id": 1,
+    "content": "This is my comment on the post.",
+    "created_at": "2025-12-13T11:15:00Z",
+    "updated_at": "2025-12-13T11:15:00Z"
+  }
+```
+
+#### 3. Retrieve a Comment
+- **URL:** `/api/comments/{id}/`
+- **Method:** `GET`
+- **Authentication:** Optional
+- **Response (200 OK):** Comment object
+
+#### 4. Update a Comment
+- **URL:** `/api/comments/{id}/`
+- **Method:** `PUT` or `PATCH`
+- **Authentication:** Token required (must be author)
+- **Headers:** `Authorization: Token <your-token>`
+- **Request Body:**
+```json
+  {
+    "content": "Updated comment content"
+  }
+```
+- **Response (200 OK):** Updated comment object
+
+#### 5. Delete a Comment
+- **URL:** `/api/comments/{id}/`
+- **Method:** `DELETE`
+- **Authentication:** Token required (must be author)
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (204 No Content)**
+
+## Permissions
+
+### Posts and Comments
+- **Read (GET):** Anyone (authenticated or not)
+- **Create (POST):** Authenticated users only
+- **Update (PUT/PATCH):** Author only
+- **Delete (DELETE):** Author only
+
+The custom `IsAuthorOrReadOnly` permission ensures that:
+- Anyone can view posts and comments
+- Only authenticated users can create posts and comments
+- Only the author can edit or delete their own posts and comments
+
+## Features
+
+### Pagination
+- Default page size: 10 items
+- Customizable via `page_size` query parameter (max: 100)
+- Provides `next` and `previous` links for navigation
+
+### Filtering and Search
+- **Posts:** Search by title or content using `?search=keyword`
+- Returns results matching the keyword in either field
+
+### Data Validation
+- All fields are validated by serializers
+- Foreign keys ensure data integrity
+- Timestamps are automatically managed
+
 ## Future Enhancements
 - Post creation and management
 - Comments and likes functionality
