@@ -486,6 +486,155 @@ Response:
   "message": "You have unfollowed jane_doe"
 }
 ```
+## Likes and Notifications System
+
+### Like Endpoints
+
+#### 1. Like a Post
+- **URL:** `/api/posts/<int:pk>/like/`
+- **Method:** `POST`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (201 Created):**
+```json
+  {
+    "message": "Post liked successfully"
+  }
+```
+- **Error Responses:**
+  - 400: "You already liked this post"
+  - 404: "Post not found"
+
+#### 2. Unlike a Post
+- **URL:** `/api/posts/<int:pk>/unlike/`
+- **Method:** `POST`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (200 OK):**
+```json
+  {
+    "message": "Post unliked successfully"
+  }
+```
+- **Error Responses:**
+  - 400: "You have not liked this post"
+  - 404: "Post not found"
+
+### Notification Endpoints
+
+#### 1. View All Notifications
+- **URL:** `/notifications/`
+- **Method:** `GET`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (200 OK):**
+```json
+  [
+    {
+      "id": 1,
+      "recipient": 1,
+      "actor": "john_doe",
+      "verb": "liked your post",
+      "target_content_type": 10,
+      "target_object_id": 5,
+      "timestamp": "2025-12-13T12:30:00Z",
+      "read": false
+    },
+    {
+      "id": 2,
+      "recipient": 1,
+      "actor": "jane_smith",
+      "verb": "started following you",
+      "target_content_type": null,
+      "target_object_id": null,
+      "timestamp": "2025-12-13T11:00:00Z",
+      "read": true
+    }
+  ]
+```
+
+#### 2. Mark Notification as Read
+- **URL:** `/notifications/<int:pk>/read/`
+- **Method:** `POST`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (200 OK):**
+```json
+  {
+    "message": "Notification marked as read"
+  }
+```
+- **Error Response:**
+  - 404: "Notification not found"
+
+## Notification System
+
+### How It Works
+Notifications are automatically generated for the following actions:
+
+1. **Post Liked**: When someone likes your post
+   - Recipient: Post author
+   - Actor: User who liked
+   - Verb: "liked your post"
+   - Target: The post object
+
+2. **New Follower**: When someone follows you (to be implemented)
+   - Recipient: User being followed
+   - Actor: User who followed
+   - Verb: "started following you"
+
+3. **New Comment**: When someone comments on your post (to be implemented)
+   - Recipient: Post author
+   - Actor: User who commented
+   - Verb: "commented on your post"
+   - Target: The comment object
+
+### Notification Fields
+- **recipient**: User receiving the notification
+- **actor**: User performing the action
+- **verb**: Description of the action (e.g., "liked your post")
+- **target**: GenericForeignKey to the related object (post, comment, etc.)
+- **timestamp**: When the notification was created
+- **read**: Boolean indicating if notification has been read
+
+### Like System
+
+#### Like Model
+- Tracks which users liked which posts
+- Prevents duplicate likes (unique constraint on user + post)
+- Automatically creates notification for post author
+
+## Usage Examples
+
+### Example 1: Like a Post
+```bash
+POST /api/posts/5/like/
+Headers: Authorization: Token abc123...
+
+Response:
+{
+  "message": "Post liked successfully"
+}
+```
+
+### Example 2: View Your Notifications
+```bash
+GET /notifications/
+Headers: Authorization: Token abc123...
+
+Returns: List of all notifications for the authenticated user
+```
+
+### Example 3: Mark Notification as Read
+```bash
+POST /notifications/3/read/
+Headers: Authorization: Token abc123...
+
+Response:
+{
+  "message": "Notification marked as read"
+}
+```
 
 ## Future Enhancements
 - Post creation and management

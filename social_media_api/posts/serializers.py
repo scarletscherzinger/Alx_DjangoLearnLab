@@ -1,6 +1,10 @@
+# Third-party imports
 from rest_framework import serializers
-from .models import Post, Comment
 from django.contrib.auth import get_user_model
+
+# Local app imports
+from .models import Post, Comment, Like
+
 
 User = get_user_model()
 
@@ -26,3 +30,11 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_comments_count(self, obj):
         return obj.comments.count()
+    
+class LikeSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Like
+        fields = ['id', 'user', 'post', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
