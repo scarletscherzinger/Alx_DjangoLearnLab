@@ -378,6 +378,115 @@ The custom `IsAuthorOrReadOnly` permission ensures that:
 - Foreign keys ensure data integrity
 - Timestamps are automatically managed
 
+## User Follow System and Feed
+
+### Follow Management Endpoints
+
+#### 1. Follow a User
+- **URL:** `/follow/<int:user_id>/`
+- **Method:** `POST`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (200 OK):**
+```json
+  {
+    "message": "You are now following username"
+  }
+```
+- **Error Responses:**
+  - 400: "You cannot follow yourself"
+  - 404: "User not found"
+
+#### 2. Unfollow a User
+- **URL:** `/unfollow/<int:user_id>/`
+- **Method:** `POST`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Response (200 OK):**
+```json
+  {
+    "message": "You have unfollowed username"
+  }
+```
+- **Error Response:**
+  - 404: "User not found"
+
+### Feed Endpoint
+
+#### View Feed from Followed Users
+- **URL:** `/api/feed/`
+- **Method:** `GET`
+- **Authentication:** Token required
+- **Headers:** `Authorization: Token <your-token>`
+- **Query Parameters:**
+  - `page`: Page number (default: 1)
+  - `page_size`: Results per page (default: 10, max: 100)
+- **Response (200 OK):**
+```json
+  {
+    "count": 25,
+    "next": "http://localhost:8000/api/feed/?page=2",
+    "previous": null,
+    "results": [
+      {
+        "id": 5,
+        "author": "followed_user",
+        "author_id": 3,
+        "title": "Post from followed user",
+        "content": "This post appears in your feed",
+        "created_at": "2025-12-13T12:00:00Z",
+        "updated_at": "2025-12-13T12:00:00Z",
+        "comments": [],
+        "comments_count": 0
+      }
+    ]
+  }
+```
+
+## User Relationships
+
+The CustomUser model includes a **followers/following** system:
+
+- **followers**: ManyToManyField representing users who follow this user
+- **following** (reverse relationship): Users that this user follows
+
+### How It Works:
+1. User A follows User B: `user_a.following.add(user_b)`
+2. User B's followers include User A: `user_b.followers.all()` contains User A
+3. Feed shows posts from users in `user.following.all()`
+
+## Usage Examples
+
+### Example 1: Follow a User
+```bash
+POST /follow/5/
+Headers: Authorization: Token abc123...
+
+Response:
+{
+  "message": "You are now following jane_doe"
+}
+```
+
+### Example 2: View Your Feed
+```bash
+GET /api/feed/
+Headers: Authorization: Token abc123...
+
+Returns: Posts from all users you follow, most recent first
+```
+
+### Example 3: Unfollow a User
+```bash
+POST /unfollow/5/
+Headers: Authorization: Token abc123...
+
+Response:
+{
+  "message": "You have unfollowed jane_doe"
+}
+```
+
 ## Future Enhancements
 - Post creation and management
 - Comments and likes functionality
