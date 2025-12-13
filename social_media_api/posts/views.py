@@ -47,7 +47,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def feed_view(request):
@@ -64,18 +63,13 @@ def feed_view(request):
     
     return paginator.get_paginated_response(serializer.data)
 
-from rest_framework import status
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
     """
     Like a post and generate a notification for the post author.
     """
-    try:
-        post = Post.objects.get(pk=pk)
-    except Post.DoesNotExist:
-        return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+    post = generics.get_object_or_404(Post, pk=pk)
     
     # Check if already liked
     like, created = Like.objects.get_or_create(user=request.user, post=post)
@@ -100,10 +94,7 @@ def unlike_post(request, pk):
     """
     Unlike a post.
     """
-    try:
-        post = Post.objects.get(pk=pk)
-    except Post.DoesNotExist:
-        return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+    post = generics.get_object_or_404(Post, pk=pk)
     
     try:
         like = Like.objects.get(user=request.user, post=post)
